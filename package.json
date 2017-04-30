@@ -1,0 +1,32 @@
+{
+  "name": "websockets",
+  "version": "1.0.0",
+  "description": "Redis PubSub, NodeJS, and Socket.io example",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodejs index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/compose-ex/websockets.git"
+  },
+  "keywords": [
+    "Redis",
+    "NodeJS",
+    "Socket.io"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/compose-ex/websockets/issues"
+  },
+  "homepage": "https://github.com/compose-ex/websockets#readme",
+  "dependencies": {
+    "config": "^1.24.0",
+    "express": "^4.14.0",
+    "redis": "^2.6.3",
+    "socket.io": "^1.5.1",
+    "jquery": "^3.2.1"
+  }
+}
