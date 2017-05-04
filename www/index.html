@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
+    <title>Twitter Stream Sentiment Analysis</title>
+
+    <!--CSS-->
     <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.tagsinput/0.4.2/bootstrap-tagsinput.css"/>
+
+    <!--JS-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
     <script src="js/libs/d3.v3.5.17.min.js" type="text/javascript"></script>
     <script src="js/libs/topojson.v1.min.js" type="text/javascript"></script>
     <script src="js/libs/datamaps.world.min.js" type="text/javascript"></script>
-    <title>Twitter Stream Sentiment Analysis</title>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/bootstrap.tagsinput/0.4.2/bootstrap-tagsinput.min.js"></script>
 </head>
 <body>
-<div id="header">
-    <h1>Twitter Stream Sentiment Analysis</h1>
+<div class="row">
+    <div class="col-md-8">
+        <div id="worldmap"></div>
+    </div>
+    <div class="col-md-4">
+        <div class="row">
+            <button id="submitButton" class="btn btn-secondary" type="button">Search</button>
+            <input id="hashtags" type="text" placeholder="hashtags" data-role="tagsinput"/>
+        </div>
+        <div class="row">
+            <div id="tweets" class="list-group">
+            </div>
+        </div>
+    </div>
 </div>
-<div id="worldmap"></div>
 <script src="js/datamap.js" type="text/javascript"></script>
+<script src="js/hashtags.js" type="text/javascript"></script>
 </body>
-
