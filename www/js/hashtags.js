@@ -1,48 +1,104 @@
 var prevHashtags = [];
-var prevNumberOfTweets = 10;
 
 $(function () {
     $('#submitButton').click(function () {
         var hashtags = $("#hashtags").tagsinput('items');
         getTopTweets(hashtags, 10);
         prevHashtags = hashtags;
-        prevNumberOfTweets = 10;
     });
 
-    getTopTweets(prevHashtags, prevNumberOfTweets);
+    getTopTweets(prevHashtags, 10);
+    getTopHashtags();
 
     setInterval(function () {
-        console.log('interval...');
-        getTopTweets(prevHashtags, prevNumberOfTweets);
-    }, 10 * 1000);
+        getTopTweets(prevHashtags, 10);
+        getTopHashtags();
+    }, 30 * 1000);
 });
 
 function clearTweets() {
-    $('#tweets').empty();
+    $('#tweetsTable').find('tbody').empty();
 }
 
-function enableProgressIndicator() {
-    clearTweets();
-    $('#tweets').text('update...');
+function showProgressIndicator() {
+    $('#progress').show();
 }
 
-function prepareGetParams(hashtags) {
-    return hashtags
-        .map(function (h) {
-            return 'hashtags=' + h
-        })
-        .join('&')
+function hideProgress() {
+    $('#progress').hide();
 }
 
-function getTopTweets(hashtags, numberOfTweets) {
-    enableProgressIndicator();
-    var params = prepareGetParams(hashtags);
-    $.getJSON('http://localhost:4567/?' + params, function (data) {
-        clearTweets();
-        data.forEach(function (t) {
-            $('#tweets').append('<a href="#" class="list-group-item">' + t.text + '</a>')
+function showTweetsTable() {
+    $('#tweetsTable').show();
+}
+
+function hideTweetsTable() {
+    $('#tweetsTable').hide();
+}
+
+function showInfo() {
+    $('#info').show();
+}
+
+function hideInfo() {
+    $('#info').hide();
+}
+
+function addTweet(t) {
+    $('#tweetsTable')
+        .find('tbody')
+        .append(''
+            + '<tr>'
+            + '<td>' + t.text + '</td>'
+            + '<td>' + t.retweetCount + '</td>'
+            + '<td>' + t.favoriteCount + '</td>'
+            + '</tr>'
+        )
+}
+
+function getTopHashtags() {
+    var params = $.param({
+        'numberOfHashtags': 50
+    });
+    $.getJSON('http://localhost:4567/hashtags?' + params, function (data) {
+        var cloud = Object.keys(data).map(function (h) {
+            return {
+                'text': h,
+                'weight': data[h],
+                'link': 'https://twitter.com/hashtag/' + h
+            };
+        });
+        $('#hashtagCloud').jQCloud(cloud, {
+            width: 750,
+            height: 750
         })
     }).fail(function (error) {
         console.log(error);
+    });
+}
+
+function getTopTweets(hashtags, numberOfTweets) {
+    hideTweetsTable();
+    hideInfo();
+    showProgressIndicator();
+    var params = $.param({
+        'hashtags': hashtags,
+        'numberOfTweets': numberOfTweets
+    });
+    $.getJSON('http://localhost:4567/tweets?' + params, function (data) {
+        clearTweets();
+        hideProgress();
+        if (data.length === 0) {
+            showInfo();
+            $('#info').text('No tweets found for given hashtags');
+        } else {
+            showTweetsTable();
+            data.forEach(addTweet)
+        }
+    }).fail(function (error) {
+        console.log(error);
+        hideProgress();
+        showInfo();
+        $('#info').text('Error');
     });
 }
