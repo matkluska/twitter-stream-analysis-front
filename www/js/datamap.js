@@ -9,7 +9,7 @@ var worldMap = new Datamap({
     },
     bubblesConfig: {
         radius: 7,
-        exitDelay: 3000 // Milliseconds
+        exitDelay: 10000 // milliseconds
     },
     responsive: true,
     done: function (datamap) {
@@ -24,7 +24,6 @@ var worldMap = new Datamap({
         }
     },
     fills: {
-        // defaultFill: '#E5DBD2',
         defaultFill: '#ABDDA4',
         "0": 'blue',
         "-1": 'red',
@@ -52,36 +51,22 @@ function determineEmoji(sentiment) {
     return sentiment === 0 ? "&#x1F44C;" : (sentiment === -1 ? "&#x1F44E;" : "&#128077;");
 }
 
-var func = function (geo, data) {
-    var tip = "<div><h3><span style='vertical-align:middle'>@" + data.name + '</span><img style="vertical-align:middle" height="70" width="70" src="' + data.pic + '"></h3></div>';
-    tip += "<h6>" + data.date + "</h6>";
-    tip += "<h4>" + data.text + "</h4>";
-    tip += "Sentiment:<font size='6em' color=" + determineColor(parseInt(data.fillKey)) + ">" + determineEmoji(parseInt(data.fillKey)) + "</font>";
+var func = function (geo, tweet) {
+    var tip = "<div><h3><span style='vertical-align:middle'>@" + tweet.userName + '</span><img style="vertical-align:middle" height="70" width="70" src="' + tweet.avatarURL + '"></h3></div>';
+    tip += "<h6>" + tweet.creationDate + "</h6>";
+    tip += "<h4>" + tweet.tweetText + "</h4>";
+    tip += "Sentiment:<font size='6em' color=" + determineColor(parseInt(tweet.fillKey)) + ">" + determineEmoji(parseInt(tweet.fillKey)) + "</font>";
     return "<div class='hoverinfo tooltip'>" + tip + '</div>';
 };
 
 $(document).ready(function () {
 
-    // test
     var socket = io();
     socket.on('message', function (msg) {
-        // console.log(msg);
-        data = msg.split("~|~");
-        var bubble = {
-            "id": data[0],
-            "name": data[1],
-            "text": data[2],
-            "fillKey": data[3],
-            // "fillKey": 0,
-            "latitude": data[4],
-            "longitude": data[5],
-            "pic": data[6],
-            "date": data[7]
-        };
-        console.log(bubble);
-
+        var tweet = JSON.parse(msg);
+        // console.log(tweet);
         var bubble_array = [];
-        bubble_array.push(bubble);
+        bubble_array.push(tweet);
         worldMap.bubbles(bubble_array, {
             popupTemplate: func
         });
