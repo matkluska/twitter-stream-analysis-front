@@ -1,23 +1,33 @@
-var prevHashtags = [];
+var hashtags = [];
+var period = 0;
+var numberOfTweets = 10;
 
 $(function () {
     $('#submitButton').click(function () {
-        var hashtags = $("#hashtags").tagsinput('items');
-        getTopTweets(hashtags, 10);
-        prevHashtags = hashtags;
+        hashtags = $("#hashtags").tagsinput('items');
+        period = $("#period").val();
+        getTopTweets(hashtags, numberOfTweets, period);
     });
 
-    getTopTweets(prevHashtags, 10);
+    getTopTweets(hashtags, numberOfTweets, period);
     getTopHashtags();
 
     setInterval(function () {
-        getTopTweets(prevHashtags, 10);
+        getTopTweets(hashtags, numberOfTweets, period);
         getTopHashtags();
     }, 30 * 1000);
 });
 
 function clearTweets() {
-    $('#tweetsTable').find('tbody').empty();
+    $('#tweets').empty();
+}
+
+function showTweets() {
+    $('#tweets').show();
+}
+
+function hideTweets() {
+    $('#tweets').hide();
 }
 
 function showProgressIndicator() {
@@ -28,32 +38,17 @@ function hideProgress() {
     $('#progress').hide();
 }
 
-function showTweetsTable() {
-    $('#tweetsTable').show();
-}
-
-function hideTweetsTable() {
-    $('#tweetsTable').hide();
-}
-
-function showInfo() {
+function showInfo(text) {
     $('#info').show();
+    $('#info').text(text);
 }
 
 function hideInfo() {
     $('#info').hide();
 }
 
-function addTweet(t) {
-    $('#tweetsTable')
-        .find('tbody')
-        .append(''
-            + '<tr>'
-            + '<td>' + t.text + '</td>'
-            + '<td>' + t.retweetCount + '</td>'
-            + '<td>' + t.favoriteCount + '</td>'
-            + '</tr>'
-        )
+function addTweet(html) {
+    $('#tweets').append(html);
 }
 
 function getTopHashtags() {
@@ -77,28 +72,39 @@ function getTopHashtags() {
     });
 }
 
-function getTopTweets(hashtags, numberOfTweets) {
-    hideTweetsTable();
+function getTopTweets(hashtags, numberOfTweets, period) {
     hideInfo();
+    hideTweets();
     showProgressIndicator();
     var params = $.param({
         'hashtags': hashtags,
-        'numberOfTweets': numberOfTweets
+        'numberOfTweets': numberOfTweets,
+        'period': period
     });
     $.getJSON('http://localhost:4567/tweets?' + params, function (data) {
         clearTweets();
         hideProgress();
         if (data.length === 0) {
-            showInfo();
-            $('#info').text('No tweets found for given hashtags');
+            showInfo('No tweets found for given hashtags');
         } else {
-            showTweetsTable();
-            data.forEach(addTweet)
+            data.forEach(embedTweet);
+            showTweets();
         }
     }).fail(function (error) {
         console.log(error);
         hideProgress();
-        showInfo();
-        $('#info').text('Error');
+        showInfo('Error');
+    });
+}
+
+function embedTweet(tweet) {
+    var url = 'https://publish.twitter.com/oembed?url=https://twitter.com/' + tweet.username + '/status/' + tweet.id;
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "jsonp",
+        success: function (data) {
+            addTweet(data.html);
+        }
     });
 }
