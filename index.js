@@ -24,12 +24,12 @@ socket.on('connection', function (client) {
     subscribe.subscribe('TweetStream');
 
     subscribe.on("message", function (channel, msg) {
-        console.log(msg);
+        // console.log(msg);
         client.send(msg);
     });
 
     client.on('message', function (msg) {
-        console.log(msg);
+        // console.log(msg);
         client.send(msg);
     });
 
